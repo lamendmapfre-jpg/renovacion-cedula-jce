@@ -3,232 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consulta Renovación Cédula RD</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Renovación Cédula RD</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
 body{
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(135deg,#0f172a,#1e3a8a);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-  color:white;
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    color:white;
 }
 
-.app{
-  background:white;
-  color:#111;
-  width:420px;
-  padding:30px;
-  border-radius:25px;
-  box-shadow:0 30px 60px rgba(0,0,0,0.4);
-  animation:fadeIn .6s ease;
+.container{
+    width:380px;
+    background:white;
+    color:#222;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.4);
 }
 
 h1{
-  text-align:center;
-  margin-bottom:20px;
-  font-size:22px;
-  color:#1e3a8a;
+    text-align:center;
+    font-size:20px;
+    margin-bottom:20px;
 }
 
-label{
-  font-size:13px;
-  font-weight:600;
-  margin-top:15px;
-  display:block;
-}
-
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  font-size:14px;
+input{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
 }
 
 button{
-  background:#1e3a8a;
-  color:white;
-  font-weight:600;
-  border:none;
-  cursor:pointer;
-  transition:.3s;
-  margin-top:20px;
+    width:100%;
+    padding:12px;
+    background:#0057b7;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
 }
 
-button:hover{
-  background:#162c6b;
-}
-
-.resultado{
-  margin-top:20px;
-  padding:15px;
-  border-radius:15px;
-  background:#f1f5f9;
-  font-size:14px;
-  opacity:0;
-  transform:translateY(10px);
-  transition:.4s ease;
-}
-
-.resultado.show{
-  opacity:1;
-  transform:translateY(0);
+.result{
+    margin-top:20px;
+    padding:15px;
+    border-radius:10px;
+    background:#f1f1f1;
 }
 
 .badge{
-  padding:6px 10px;
-  border-radius:8px;
-  font-size:12px;
-  font-weight:600;
-  display:inline-block;
-  margin-bottom:8px;
+    padding:8px;
+    border-radius:20px;
+    font-size:14px;
+    display:inline-block;
+    margin-bottom:10px;
 }
 
-.este{
-  background:#16a34a;
-  color:white;
-}
+.green{ background:#d4edda; color:#155724; }
+.red{ background:#f8d7da; color:#721c24; }
 
-.proximo{
-  background:#f59e0b;
-  color:white;
+.card{
+    margin-top:15px;
+    background:linear-gradient(135deg,#004aad,#001f4d);
+    color:white;
+    padding:15px;
+    border-radius:15px;
+    font-size:14px;
 }
-
-.alerta{
-  background:#dc2626;
-  color:white;
-}
-
-.countdown{
-  margin-top:10px;
-  font-weight:600;
-  color:#1e3a8a;
-}
-
-.cedula{
-  margin-top:20px;
-  background:linear-gradient(135deg,#1e3a8a,#2563eb);
-  color:white;
-  padding:18px;
-  border-radius:20px;
-  font-size:13px;
-  box-shadow:0 15px 30px rgba(0,0,0,0.3);
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(15px)}
-  to{opacity:1;transform:translateY(0)}
+.timer{
+    font-weight:bold;
+    font-size:16px;
+    margin-top:5px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
-<h1>Renovación Cédula 2026-2027</h1>
+<div class="container">
+<h1>Consulta Renovación Cédula RD</h1>
 
-<label>Nombre completo</label>
-<input type="text" id="nombre">
-
-<label>Fecha de nacimiento</label>
-<input type="date" id="nacimiento">
-
+<input type="text" id="name" placeholder="Nombre">
+<input type="date" id="birth">
 <button onclick="calcular()">Consultar</button>
 
-<div class="resultado" id="resultado"></div>
-<div class="cedula" id="cedula" style="display:none;"></div>
-
+<div id="output"></div>
 </div>
 
 <script>
-let intervalo;
-
 function calcular(){
+    const nombre = document.getElementById("name").value;
+    const nacimiento = new Date(document.getElementById("birth").value);
+    const hoy = new Date();
 
-  const nombre = document.getElementById("nombre").value;
-  const nacimientoInput = document.getElementById("nacimiento").value;
-  const resultado = document.getElementById("resultado");
-  const cedula = document.getElementById("cedula");
+    const edad = hoy.getFullYear() - nacimiento.getFullYear();
 
-  if(!nombre || !nacimientoInput){
-    alert("Complete todos los campos.");
-    return;
-  }
-
-  const nacimiento = new Date(nacimientoInput);
-  const hoy = new Date();
-
-  let edad = hoy.getFullYear() - nacimiento.getFullYear();
-  let m = hoy.getMonth() - nacimiento.getMonth();
-  if(m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
-
-  if(edad < 18){
-    resultado.innerHTML = `<div class="badge alerta">No elegible</div>
-    Actualmente tiene ${edad} años.`;
-    resultado.classList.add("show");
-    return;
-  }
-
-  const mes = nacimiento.getMonth();
-  const añoRenovacion = (mes >= 3) ? 2026 : 2027;
-  const fechaRenovacion = new Date(añoRenovacion, mes, 1);
-
-  let indicador = (añoRenovacion === 2026)
-    ? `<div class="badge este">Te toca este año</div>`
-    : `<div class="badge proximo">Te toca el próximo año</div>`;
-
-  resultado.innerHTML = `
-    ${indicador}
-    Mes asignado: <strong>${fechaRenovacion.toLocaleDateString()}</strong>
-    <div class="countdown" id="countdown"></div>
-  `;
-  resultado.classList.add("show");
-
-  cedula.style.display="block";
-  cedula.innerHTML = `
-    <strong>Nueva Cédula Digital</strong><br><br>
-    Nombre: ${nombre}<br>
-    Renovación: ${fechaRenovacion.toLocaleDateString()}<br>
-    Estado: Activa hasta nueva emisión
-  `;
-
-  iniciarCountdown(fechaRenovacion);
-}
-
-function iniciarCountdown(fecha){
-
-  clearInterval(intervalo);
-
-  intervalo = setInterval(() => {
-
-    const ahora = new Date();
-    const diferencia = fecha - ahora;
-
-    if(diferencia <= 0){
-      document.getElementById("countdown").innerHTML =
-      "Ya puede renovar.";
-      clearInterval(intervalo);
-      return;
+    if(edad < 18){
+        document.getElementById("output").innerHTML =
+        `<div class="result red">Debe ser mayor de 18 años.</div>`;
+        return;
     }
 
-    const dias = Math.floor(diferencia/(1000*60*60*24));
-    const horas = Math.floor((diferencia/(1000*60*60))%24);
-    const minutos = Math.floor((diferencia/(1000*60))%60);
-    const segundos = Math.floor((diferencia/1000)%60);
+    const anioRenovacion = hoy.getFullYear();
+    const fechaRenovacion = new Date(anioRenovacion, nacimiento.getMonth(), 1);
 
-    document.getElementById("countdown").innerHTML =
-    `Cuenta regresiva: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    let mensaje = "";
+    let clase = "";
 
-  },1000);
+    if(hoy.getMonth() === nacimiento.getMonth()){
+        mensaje = "Te toca este año";
+        clase = "green";
+    } else {
+        mensaje = "Te toca el próximo año";
+        clase = "red";
+    }
+
+    document.getElementById("output").innerHTML = `
+    <div class="result">
+        <div class="badge ${clase}">${mensaje}</div>
+        <p><strong>Mes asignado:</strong> ${fechaRenovacion.toLocaleDateString()}</p>
+        <div class="timer" id="timer"></div>
+
+        <div class="card">
+            <strong>Nueva Cédula Digital</strong><br><br>
+            Nombre: ${nombre}<br>
+            Renovación: ${fechaRenovacion.toLocaleDateString()}<br>
+            Estado: Activa hasta nueva emisión
+        </div>
+    </div>
+    `;
+
+    iniciarContador(fechaRenovacion);
+}
+
+function iniciarContador(fecha){
+    const timer = document.getElementById("timer");
+
+    setInterval(()=>{
+        const ahora = new Date();
+        const diferencia = fecha - ahora;
+
+        const dias = Math.floor(diferencia / (1000*60*60*24));
+        const horas = Math.floor((diferencia / (1000*60*60)) % 24);
+        const minutos = Math.floor((diferencia / (1000*60)) % 60);
+        const segundos = Math.floor((diferencia / 1000) % 60);
+
+        timer.innerHTML = `Cuenta regresiva: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    },1000);
 }
 </script>
 
