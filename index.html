@@ -1,13 +1,15 @@
 <script>
 function calcular(){
     const nombre = document.getElementById("name").value;
-    const nacimiento = new Date(document.getElementById("birth").value);
-    const hoy = new Date();
+    const nacimientoInput = document.getElementById("birth").value;
 
-    if(!nombre || !document.getElementById("birth").value){
+    if(!nombre || !nacimientoInput){
         alert("Complete los datos");
         return;
     }
+
+    const nacimiento = new Date(nacimientoInput);
+    const hoy = new Date();
 
     const edad = hoy.getFullYear() - nacimiento.getFullYear();
     if(edad < 18){
@@ -18,37 +20,34 @@ function calcular(){
 
     const mes = nacimiento.getMonth(); // 0 = Enero
     let anioRenovacion;
+    let diaInicio = 1;
 
     // Abril (3) a Diciembre (11) → 2026
     if(mes >= 3){
         anioRenovacion = 2026;
-    } 
+
+        // Abril inicia el día 12
+        if(mes === 3){
+            diaInicio = 12;
+        }
+    }
     // Enero (0) a Marzo (2) → 2027
     else{
         anioRenovacion = 2027;
     }
 
-    const fechaRenovacion = new Date(anioRenovacion, mes, 12);
-
-    const inicioProceso = new Date(2026,3,12); // 12 Abril 2026
-    const finValidez = new Date(2027,2,31);    // 31 Marzo 2027
-
-    let mensaje = "";
-    let clase = "";
-
-    if(anioRenovacion === 2026){
-        mensaje = "Te toca en 2026";
-        clase = "green";
-    }else{
-        mensaje = "Te toca en 2027";
-        clase = "green";
-    }
+    const fechaRenovacion = new Date(anioRenovacion, mes, diaInicio);
+    const finValidez = new Date(2027,2,31); // 31 Marzo 2027
 
     document.getElementById("output").innerHTML = `
     <div class="result">
-        <div class="badge ${clase}">${mensaje}</div>
-        <p><strong>Fecha asignada:</strong> ${fechaRenovacion.toLocaleDateString()}</p>
+        <div class="badge green">
+            Te corresponde en ${anioRenovacion}
+        </div>
+
+        <p><strong>Inicio de tu mes:</strong> ${fechaRenovacion.toLocaleDateString()}</p>
         <p><strong>Validez cédula actual hasta:</strong> ${finValidez.toLocaleDateString()}</p>
+
         <div class="timer" id="timer"></div>
 
         <div class="card">
