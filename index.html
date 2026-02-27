@@ -1,64 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta Renovación Cédula RD</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI,Arial}
+
+body{
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#222;
+}
+
+.app{
+width:400px;
+background:#ffffff;
+border-radius:20px;
+padding:25px;
+box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+h1{
+text-align:center;
+font-size:20px;
+margin-bottom:20px;
+color:#0b3d91;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+button{
+background:#0b3d91;
+color:white;
+border:none;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#072a63;
+}
+
+.result{
+margin-top:20px;
+padding:15px;
+border-radius:12px;
+background:#f5f7fa;
+}
+
+.badge{
+padding:6px 12px;
+border-radius:20px;
+font-size:13px;
+display:inline-block;
+margin-bottom:10px;
+background:#d4edda;
+color:#155724;
+}
+
+.timer{
+margin-top:8px;
+font-weight:bold;
+color:#0b3d91;
+}
+
+.card{
+margin-top:15px;
+background:linear-gradient(135deg,#004aad,#001f4d);
+color:white;
+padding:15px;
+border-radius:15px;
+font-size:14px;
+}
+.small{
+font-size:12px;
+opacity:0.8;
+margin-top:4px;
+}
+.error{
+background:#f8d7da;
+color:#721c24;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+<h1>Renovación Cédula RD 2026–2027</h1>
+
+<input type="text" id="nombre" placeholder="Nombre completo">
+<input type="date" id="fecha">
+
+<button onclick="calcular()">Consultar</button>
+
+<div id="output"></div>
+</div>
+
 <script>
 function calcular(){
-    const nombre = document.getElementById("name").value;
-    const nacimientoInput = document.getElementById("birth").value;
 
-    if(!nombre || !nacimientoInput){
-        alert("Complete los datos");
-        return;
-    }
+const nombre = document.getElementById("nombre").value.trim();
+const fechaInput = document.getElementById("fecha").value;
+const output = document.getElementById("output");
 
-    const nacimiento = new Date(nacimientoInput);
-    const hoy = new Date();
+if(!nombre || !fechaInput){
+output.innerHTML = `<div class="error">Complete todos los campos.</div>`;
+return;
+}
 
-    const edad = hoy.getFullYear() - nacimiento.getFullYear();
-    if(edad < 18){
-        document.getElementById("output").innerHTML =
-        `<div class="result red">Debe ser mayor de 18 años.</div>`;
-        return;
-    }
+const nacimiento = new Date(fechaInput);
+const hoy = new Date();
 
-    const mes = nacimiento.getMonth(); // 0 = Enero
-    let anioRenovacion;
-    let diaInicio = 1;
+let edad = hoy.getFullYear() - nacimiento.getFullYear();
+if(
+hoy.getMonth() < nacimiento.getMonth() ||
+(hoy.getMonth() === nacimiento.getMonth() && hoy.getDate() < nacimiento.getDate())
+){
+edad--;
+}
 
-    // Abril (3) a Diciembre (11) → 2026
-    if(mes >= 3){
-        anioRenovacion = 2026;
+if(edad < 18){
+output.innerHTML = `<div class="error">Debe ser mayor de 18 años.</div>`;
+return;
+}
 
-        // Abril inicia el día 12
-        if(mes === 3){
-            diaInicio = 12;
-        }
-    }
-    // Enero (0) a Marzo (2) → 2027
-    else{
-        anioRenovacion = 2027;
-    }
+const mes = nacimiento.getMonth(); // 0 = enero
+let anio;
+let diaInicio = 1;
 
-    const fechaRenovacion = new Date(anioRenovacion, mes, diaInicio);
-    const finValidez = new Date(2027,2,31); // 31 Marzo 2027
+// Abril (3) a diciembre (11) → 2026
+if(mes >= 3){
+anio = 2026;
+if(mes === 3){ // Abril inicia el 12
+diaInicio = 12;
+}
+}
+// Enero (0) a marzo (2) → 2027
+else{
+anio = 2027;
+}
 
-    document.getElementById("output").innerHTML = `
-    <div class="result">
-        <div class="badge green">
-            Te corresponde en ${anioRenovacion}
-        </div>
+const fechaRenovacion = new Date(anio, mes, diaInicio);
+const finValidez = new Date(2027,2,31);
 
-        <p><strong>Inicio de tu mes:</strong> ${fechaRenovacion.toLocaleDateString()}</p>
-        <p><strong>Validez cédula actual hasta:</strong> ${finValidez.toLocaleDateString()}</p>
+output.innerHTML = `
+<div class="result">
+<div class="badge">Te corresponde en ${anio}</div>
 
-        <div class="timer" id="timer"></div>
+<p><strong>Inicio de tu mes:</strong> ${fechaRenovacion.toLocaleDateString()}</p>
+<p><strong>Válida hasta:</strong> ${finValidez.toLocaleDateString()}</p>
 
-        <div class="card">
-            <strong>Nueva Cédula Digital</strong><br><br>
-            Nombre: ${nombre}<br>
-            Renovación: ${fechaRenovacion.toLocaleDateString()}<br>
-            Estado: Activa hasta 31/03/2027
-        </div>
-    </div>
-    `;
+<div class="timer" id="timer"></div>
 
-    iniciarContador(fechaRenovacion);
+<div class="card">
+<strong>Nueva Cédula Digital</strong><br><br>
+Nombre: ${nombre}<br>
+Renovación: ${fechaRenovacion.toLocaleDateString()}<br>
+Estado: Activa hasta 31/03/2027
+<div class="small">Proceso nacional inicia 12/04/2026</div>
+</div>
+</div>
+`;
+
+iniciarContador(fechaRenovacion);
+}
+
+function iniciarContador(fecha){
+
+const timer = document.getElementById("timer");
+
+function actualizar(){
+const ahora = new Date();
+const diferencia = fecha - ahora;
+
+if(diferencia <= 0){
+timer.innerHTML = "Tu mes ya inició.";
+return;
+}
+
+const dias = Math.floor(diferencia / (1000*60*60*24));
+const horas = Math.floor((diferencia / (1000*60*60)) % 24);
+const minutos = Math.floor((diferencia / (1000*60)) % 60);
+const segundos = Math.floor((diferencia / 1000) % 60);
+
+timer.innerHTML = `Cuenta regresiva: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
+}
+
+actualizar();
+setInterval(actualizar,1000);
 }
 </script>
+
+</body>
+</html>
