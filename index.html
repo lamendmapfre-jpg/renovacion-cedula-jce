@@ -3,123 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Renovación Cédula JCE</title>
+<title>Consulta Renovación Cédula RD</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-    margin:0;
-    font-family:'Segoe UI', sans-serif;
-    background:linear-gradient(135deg,#0a2a66,#003f7d);
-    display:flex;
-    justify-content:center;
-    padding:20px;
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  color:white;
 }
+
 .app{
-    background:white;
-    width:400px;
-    padding:20px;
-    border-radius:20px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+  background:white;
+  color:#111;
+  width:420px;
+  padding:30px;
+  border-radius:25px;
+  box-shadow:0 30px 60px rgba(0,0,0,0.4);
+  animation:fadeIn .6s ease;
 }
-h2{text-align:center;color:#003f7d;}
-input,select,button{
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    border-radius:10px;
-    border:1px solid #ccc;
+
+h1{
+  text-align:center;
+  margin-bottom:20px;
+  font-size:22px;
+  color:#1e3a8a;
 }
+
+label{
+  font-size:13px;
+  font-weight:600;
+  margin-top:15px;
+  display:block;
+}
+
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
 button{
-    background:#003f7d;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
+  background:#1e3a8a;
+  color:white;
+  font-weight:600;
+  border:none;
+  cursor:pointer;
+  transition:.3s;
+  margin-top:20px;
 }
+
+button:hover{
+  background:#162c6b;
+}
+
 .resultado{
-    margin-top:15px;
-    background:#f4f6fb;
-    padding:10px;
-    border-radius:10px;
+  margin-top:20px;
+  padding:15px;
+  border-radius:15px;
+  background:#f1f5f9;
+  font-size:14px;
+  opacity:0;
+  transform:translateY(10px);
+  transition:.4s ease;
 }
+
+.resultado.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.badge{
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+  display:inline-block;
+  margin-bottom:8px;
+}
+
+.este{
+  background:#16a34a;
+  color:white;
+}
+
+.proximo{
+  background:#f59e0b;
+  color:white;
+}
+
+.alerta{
+  background:#dc2626;
+  color:white;
+}
+
 .countdown{
-    font-weight:bold;
-    color:#ff9800;
+  margin-top:10px;
+  font-weight:600;
+  color:#1e3a8a;
+}
+
+.cedula{
+  margin-top:20px;
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  color:white;
+  padding:18px;
+  border-radius:20px;
+  font-size:13px;
+  box-shadow:0 15px 30px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(15px)}
+  to{opacity:1;transform:translateY(0)}
 }
 </style>
 </head>
+
 <body>
 
 <div class="app">
-<h2>Renovación JCE 2026-2027</h2>
+<h1>Renovación Cédula 2026-2027</h1>
 
-<label>Nombre completo:</label>
+<label>Nombre completo</label>
 <input type="text" id="nombre">
 
-<label>Fecha de nacimiento:</label>
+<label>Fecha de nacimiento</label>
 <input type="date" id="nacimiento">
 
 <button onclick="calcular()">Consultar</button>
 
 <div class="resultado" id="resultado"></div>
+<div class="cedula" id="cedula" style="display:none;"></div>
+
 </div>
 
 <script>
 let intervalo;
 
 function calcular(){
-    let nombre = document.getElementById("nombre").value;
-    let nacimiento = new Date(document.getElementById("nacimiento").value);
-    let hoy = new Date();
 
-    if(!nombre || !document.getElementById("nacimiento").value){
-        alert("Complete los datos.");
-        return;
-    }
+  const nombre = document.getElementById("nombre").value;
+  const nacimientoInput = document.getElementById("nacimiento").value;
+  const resultado = document.getElementById("resultado");
+  const cedula = document.getElementById("cedula");
 
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    let m = hoy.getMonth() - nacimiento.getMonth();
-    if(m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+  if(!nombre || !nacimientoInput){
+    alert("Complete todos los campos.");
+    return;
+  }
 
-    if(edad < 18){
-        document.getElementById("resultado").innerHTML =
-        "No elegible aún (menor de 18 años).";
-        return;
-    }
+  const nacimiento = new Date(nacimientoInput);
+  const hoy = new Date();
 
-    let mes = nacimiento.getMonth();
-    let añoRenovacion = (mes >= 3) ? 2026 : 2027;
-    let fechaRenovacion = new Date(añoRenovacion, mes, 1);
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  let m = hoy.getMonth() - nacimiento.getMonth();
+  if(m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
 
-    iniciarCountdown(fechaRenovacion);
+  if(edad < 18){
+    resultado.innerHTML = `<div class="badge alerta">No elegible</div>
+    Actualmente tiene ${edad} años.`;
+    resultado.classList.add("show");
+    return;
+  }
+
+  const mes = nacimiento.getMonth();
+  const añoRenovacion = (mes >= 3) ? 2026 : 2027;
+  const fechaRenovacion = new Date(añoRenovacion, mes, 1);
+
+  let indicador = (añoRenovacion === 2026)
+    ? `<div class="badge este">Te toca este año</div>`
+    : `<div class="badge proximo">Te toca el próximo año</div>`;
+
+  resultado.innerHTML = `
+    ${indicador}
+    Mes asignado: <strong>${fechaRenovacion.toLocaleDateString()}</strong>
+    <div class="countdown" id="countdown"></div>
+  `;
+  resultado.classList.add("show");
+
+  cedula.style.display="block";
+  cedula.innerHTML = `
+    <strong>Nueva Cédula Digital</strong><br><br>
+    Nombre: ${nombre}<br>
+    Renovación: ${fechaRenovacion.toLocaleDateString()}<br>
+    Estado: Activa hasta nueva emisión
+  `;
+
+  iniciarCountdown(fechaRenovacion);
 }
 
 function iniciarCountdown(fecha){
 
-    clearInterval(intervalo);
+  clearInterval(intervalo);
 
-    intervalo = setInterval(function(){
+  intervalo = setInterval(() => {
 
-        let ahora = new Date();
-        let diferencia = fecha - ahora;
+    const ahora = new Date();
+    const diferencia = fecha - ahora;
 
-        if(diferencia <= 0){
-            document.getElementById("resultado").innerHTML =
-            "Ya puede renovar.";
-            clearInterval(intervalo);
-            return;
-        }
+    if(diferencia <= 0){
+      document.getElementById("countdown").innerHTML =
+      "Ya puede renovar.";
+      clearInterval(intervalo);
+      return;
+    }
 
-        let dias = Math.floor(diferencia/(1000*60*60*24));
-        let horas = Math.floor((diferencia/(1000*60*60))%24);
-        let minutos = Math.floor((diferencia/(1000*60))%60);
-        let segundos = Math.floor((diferencia/1000)%60);
+    const dias = Math.floor(diferencia/(1000*60*60*24));
+    const horas = Math.floor((diferencia/(1000*60*60))%24);
+    const minutos = Math.floor((diferencia/(1000*60))%60);
+    const segundos = Math.floor((diferencia/1000)%60);
 
-        document.getElementById("resultado").innerHTML =
-        "<div class='countdown'>" +
-        dias+"d "+horas+"h "+minutos+"m "+segundos+"s" +
-        "</div>";
+    document.getElementById("countdown").innerHTML =
+    `Cuenta regresiva: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
 
-    },1000);
+  },1000);
 }
 </script>
 
