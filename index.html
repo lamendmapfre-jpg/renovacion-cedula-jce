@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renovación Cédula JCE</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background:linear-gradient(135deg,#0a2a66,#003f7d);
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+.app{
+    background:white;
+    width:400px;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+}
+h2{text-align:center;color:#003f7d;}
+input,select,button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+button{
+    background:#003f7d;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+.resultado{
+    margin-top:15px;
+    background:#f4f6fb;
+    padding:10px;
+    border-radius:10px;
+}
+.countdown{
+    font-weight:bold;
+    color:#ff9800;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+<h2>Renovación JCE 2026-2027</h2>
+
+<label>Nombre completo:</label>
+<input type="text" id="nombre">
+
+<label>Fecha de nacimiento:</label>
+<input type="date" id="nacimiento">
+
+<button onclick="calcular()">Consultar</button>
+
+<div class="resultado" id="resultado"></div>
+</div>
+
+<script>
+let intervalo;
+
+function calcular(){
+    let nombre = document.getElementById("nombre").value;
+    let nacimiento = new Date(document.getElementById("nacimiento").value);
+    let hoy = new Date();
+
+    if(!nombre || !document.getElementById("nacimiento").value){
+        alert("Complete los datos.");
+        return;
+    }
+
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    let m = hoy.getMonth() - nacimiento.getMonth();
+    if(m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+
+    if(edad < 18){
+        document.getElementById("resultado").innerHTML =
+        "No elegible aún (menor de 18 años).";
+        return;
+    }
+
+    let mes = nacimiento.getMonth();
+    let añoRenovacion = (mes >= 3) ? 2026 : 2027;
+    let fechaRenovacion = new Date(añoRenovacion, mes, 1);
+
+    iniciarCountdown(fechaRenovacion);
+}
+
+function iniciarCountdown(fecha){
+
+    clearInterval(intervalo);
+
+    intervalo = setInterval(function(){
+
+        let ahora = new Date();
+        let diferencia = fecha - ahora;
+
+        if(diferencia <= 0){
+            document.getElementById("resultado").innerHTML =
+            "Ya puede renovar.";
+            clearInterval(intervalo);
+            return;
+        }
+
+        let dias = Math.floor(diferencia/(1000*60*60*24));
+        let horas = Math.floor((diferencia/(1000*60*60))%24);
+        let minutos = Math.floor((diferencia/(1000*60))%60);
+        let segundos = Math.floor((diferencia/1000)%60);
+
+        document.getElementById("resultado").innerHTML =
+        "<div class='countdown'>" +
+        dias+"d "+horas+"h "+minutos+"m "+segundos+"s" +
+        "</div>";
+
+    },1000);
+}
+</script>
+
+</body>
+</html>
